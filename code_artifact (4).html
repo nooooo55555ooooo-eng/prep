@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Prep & Freeze | تجهيز وتفريز - المنظومة الشاملة للمطبخ والكتب والاستدامة</title>
+    
+    <!-- مكتبات مساعدة -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                        }
+                    },
+                    animation: {
+                        'spin-slow': 'spin 8s linear infinite',
+                        'wiggle': 'wiggle 1s ease-in-out infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #fffafb; -webkit-tap-highlight-color: transparent; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .tab-content { display: none; animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .glass-panel { background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(12px); border-top: 1px solid rgba(255, 228, 230, 0.8); border-bottom: 1px solid rgba(255, 228, 230, 0.8); }
+        .active-nav-btn { color: #f43f5e !important; }
+        .btn-hover-effect:active { transform: scale(0.96); }
+    </style>
+</head>
+<body class="text-slate-800 pb-32" onload="initApp()">
+
+    <!-- الهيدر الرئيسي مع أزرار الكتاب وإعادة التدوير -->
+    <header id="main-header" class="fixed top-0 w-full z-30 glass-panel px-4 py-3 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-2">
+            <div class="w-9 h-9 rounded-full bg-brand-100 flex items-center justify-center text-brand-500 shadow-inner">
+                <i class="fa-solid fa-fire-burner animate-pulse"></i>
+            </div>
+            <div>
+                <h1 class="font-extrabold text-base tracking-tight text-slate-800 leading-none">تجهيز وتفريز</h1>
+                <span class="text-[10px] font-bold text-slate-400">منظومة المطبخ والكتب والاستدامة</span>
+            </div>
+        </div>
+
+        <div class="flex gap-2">
+            <button onclick="switchTab('cookbook')" title="صانع الكتب ومكتبة المسودات والمتجر" class="w-9 h-9 rounded-full bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center shadow-sm hover:bg-amber-100 transition btn-hover-effect">
+                <i class="fa-solid fa-book-open text-sm"></i>
+            </button>
+            <button onclick="switchTab('recycling')" title="إعادة التدوير وتوريد الهوالك" class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center shadow-sm hover:bg-emerald-100 transition btn-hover-effect">
+                <i class="fa-solid fa-recycle text-sm"></i>
+            </button>
+            <button onclick="switchTab('courses')" title="متجر الكورسات والورش" class="w-9 h-9 rounded-full bg-purple-50 text-purple-600 border border-purple-200 flex items-center justify-center shadow-sm hover:bg-purple-100 transition btn-hover-effect">
+                <i class="fa-solid fa-graduation-cap text-sm"></i>
+            </button>
+            <div onclick="switchTab('profile')" title="الملف الشخصي وحسابات الأعمال" class="w-9 h-9 rounded-full bg-brand-100 border-2 border-brand-500 overflow-hidden cursor-pointer shadow-sm btn-hover-effect">
+                <img id="header-avatar" src="https://ui-avatars.com/api/?background=f43f5e&color=fff&name=نوران" class="w-full h-full object-cover">
+            </div>
+        </div>
+    </header>
+
+    <!-- شريط التخزين الأسود (يظهر حصرياً في صفحة المخزون/التخزين فقط) -->
+    <div id="storage-sub-nav" class="fixed top-14 w-full z-20 bg-slate-900 text-white px-4 py-2 flex justify-center gap-2 shadow-md overflow-x-auto no-scrollbar">
+        <button onclick="switchStorageSub('freezer')" id="sub-btn-freezer" class="px-3.5 py-1 rounded-full text-xs font-bold transition bg-brand-500 text-white flex items-center gap-1 shrink-0">
+            <i class="fa-solid fa-snowflake text-[10px]"></i> الفريزر
+        </button>
+        <button onclick="switchStorageSub('chilling')" id="sub-btn-chilling" class="px-3.5 py-1 rounded-full text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center gap-1 shrink-0">
+            <i class="fa-solid fa-temperature-arrow-down text-[10px]"></i> التبريد (الثلاجة)
+        </button>
+        <button onclick="switchStorageSub('dry')" id="sub-btn-dry" class="px-3.5 py-1 rounded-full text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center gap-1 shrink-0">
+            <i class="fa-solid fa-box-open text-[10px]"></i> التخزين الجاف
+        </button>
+    </div>
+
+    <main id="main-content" class="pt-28 px-4 max-w-3xl mx-auto">
+        
+        <!-- ================= 1. قسم المخزون والتخزين (الفريزر / التبريد / الجاف) ================= -->
+        <section id="storage-section" class="tab-content active">
+            <div class="bg-red-50 border border-red-200 rounded-2xl p-3 mb-4 flex gap-3 items-center shadow-sm">
+                <div class="bg-red-100 text-red-500 w-8 h-8 rounded-full flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation animate-wiggle text-xs"></i>
+                </div>
+                <p class="text-xs text-red-700 font-bold">الأصناف المظللة بالأحمر اقتربت من انتهاء الصلاحية.</p>
+            </div>
+
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h2 id="storage-title" class="text-xl font-extrabold text-slate-800">❄️ مخزون الفريزر (التفريز)</h2>
+                    <p id="storage-subtitle" class="text-xs text-slate-500 font-medium">متابعة دقيقة للاستهلاك والكميات</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="document.getElementById('voice-inventory-modal').classList.remove('hidden')" class="btn-hover-effect bg-slate-800 text-white w-9 h-9 rounded-xl text-xs shadow-md flex items-center justify-center">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
+                    <button onclick="openAddInventoryModal()" class="btn-hover-effect bg-brand-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i> إضافة صنف
+                    </button>
+                </div>
+            </div>
+
+            <!-- أزرار التصنيف مع التظليل المتنقل بالأسود النشط -->
+            <div id="storage-filter-container" class="flex gap-2 overflow-x-auto no-scrollbar pb-2 mb-4">
+                <button onclick="filterStorageCat('الكل')" class="filter-btn bg-slate-800 text-white px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap shadow-md">الكل</button>
+                <button onclick="filterStorageCat('لحوم ودواجن')" class="filter-btn bg-white border text-slate-600 px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">لحوم ودواجن</button>
+                <button onclick="filterStorageCat('بحريات')" class="filter-btn bg-white border text-slate-600 px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">بحريات</button>
+                <button onclick="filterStorageCat('خضروات وفواكه')" class="filter-btn bg-white border text-slate-600 px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">خضروات وفواكه</button>
+                <button onclick="filterStorageCat('ألبان وأجبان')" class="filter-btn bg-white border text-slate-600 px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">ألبان وأجبان</button>
+                <button onclick="filterStorageCat('حبوب وبقوليات')" class="filter-btn bg-white border text-slate-600 px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">حبوب وبقوليات</button>
+            </div>
+
+            <div id="storage-items-list" class="space-y-3">
+                <!-- يُملأ برمجياً بالأكلات الأصلية مع زر ناقص/زائد وشيك بوينت للتعطيل دون حذف -->
+            </div>
+        </section>
+
+        <!-- ================= 2. زر وصفات المطبخ والمكتبة مع الأزرار الستة المطلوبة ================= -->
+        <section id="library" class="tab-content">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h2 class="text-xl font-extrabold text-slate-800">مكتبة وصفات المطبخ</h2>
+                    <p class="text-xs text-slate-500 font-medium">الوصفات المبتكرة مع خيارات الإرسال والتعديل</p>
+                </div>
+                <button onclick="switchTab('create')" class="btn-hover-effect bg-brand-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5">
+                    <i class="fa-solid fa-puzzle-piece"></i> ابتكر وصفة
+                </button>
+            </div>
+            
+            <div id="library-list" class="space-y-3">
+                <!-- يُملأ برمجياً بالأطباق الأصلية والتفاصيل الكاملة والأزرار الستة -->
+            </div>
+        </section>
+
+        <!-- ================= 3. زر وصانع الكتب (مكتبة المسودات ومتجر الكتب) ================= -->
+        <section id="cookbook" class="tab-content">
+            <div class="bg-gradient-to-r from-amber-500 to-orange-500 rounded-3xl p-5 text-white mb-5 shadow-xl relative overflow-hidden">
+                <i class="fa-solid fa-book-open absolute -left-4 -top-4 text-white/20 text-7xl"></i>
+                <h2 class="text-xl font-extrabold mb-1 relative z-10">تأليف ونشر كتب الطبخ والتفريز</h2>
+                <p class="text-white/90 text-xs relative z-10 font-medium">صمم كتابك وحدد سعر النشر، واحفظه في مكتبة المسودات أو انشره في متجر الكتب.</p>
+            </div>
+
+            <!-- الزرين المطلوبين بجوار بعضهما جوا صفحة الكتب -->
+            <div class="flex bg-slate-100 p-1 rounded-2xl mb-5 gap-1">
+                <button id="btn-sub-mylib" onclick="switchCookbookSubTab('mylib')" class="flex-1 py-2.5 rounded-xl font-extrabold text-xs transition bg-white text-amber-700 shadow-sm flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-book-bookmark"></i> مكتبة المسودات
+                </button>
+                <button id="btn-sub-store" onclick="switchCookbookSubTab('store')" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-slate-600 hover:text-amber-700 flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-store"></i> متجر الكتب
+                </button>
+            </div>
+
+            <!-- محتوى تبويب مكتبة المسودات وصانع الكتب -->
+            <div id="cookbook-sub-mylib" class="space-y-4">
+                <div class="bg-amber-50/80 border border-amber-200 rounded-2xl p-4">
+                    <h3 class="font-extrabold text-amber-900 text-sm mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-feather-pointed"></i> صانع الكتاب وتفاصيل النشر والتسعير
+                    </h3>
+                    
+                    <div class="space-y-3 text-xs">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">عنوان الكتاب:</label>
+                            <input type="text" id="book-title" placeholder="مثال: دليل التفريز المنزلي الشامل" class="w-full p-2.5 bg-white border border-amber-200 rounded-xl font-bold outline-none focus:border-amber-500">
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="w-1/2">
+                                <label class="block font-bold text-slate-700 mb-1">اسم المؤلف:</label>
+                                <input type="text" id="book-author" value="الشيف نوران" class="w-full p-2.5 bg-white border border-amber-200 rounded-xl font-bold outline-none">
+                            </div>
+                            <div class="w-1/2">
+                                <label class="block font-bold text-slate-700 mb-1">السعر (ج.م):</label>
+                                <input type="number" id="book-price" placeholder="اتركه فارغاً للمجاني" class="w-full p-2.5 bg-white border border-amber-200 rounded-xl font-bold outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">وصف الكتاب:</label>
+                            <textarea id="book-desc" rows="2" placeholder="نبذة عن الكتاب..." class="w-full p-2.5 bg-white border border-amber-200 rounded-xl font-medium outline-none"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 mt-4">
+                        <button onclick="openSelectRecipesModal()" class="flex-1 btn-hover-effect bg-white border border-amber-300 text-amber-800 py-2.5 rounded-xl text-xs font-bold hover:bg-amber-100 transition">
+                            <i class="fa-solid fa-puzzle-piece ml-1"></i> اختر وصفات للكتاب
+                        </button>
+                        <button onclick="saveBookDraft(false)" class="btn-hover-effect bg-slate-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold">
+                            حفظ بالمكتبة (مسودة)
+                        </button>
+                        <button onclick="saveBookDraft(true)" class="btn-hover-effect bg-amber-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md">
+                            <i class="fa-solid fa-paper-plane ml-1"></i> نشر بالمتجر
+                        </button>
+                    </div>
+                </div>
+
+                <h4 class="font-extrabold text-slate-800 text-sm mt-4">كتب ومسودات مكتبتك الحالية:</h4>
+                <div id="my-drafts-list" class="space-y-3">
+                    <!-- يُملأ برمجياً -->
+                </div>
+            </div>
+
+            <!-- متجر الكتب المنشورة -->
+            <div id="cookbook-sub-store" class="hidden space-y-4">
+                <div class="bg-purple-50 p-4 rounded-2xl border border-purple-200 flex items-center justify-between">
+                    <div>
+                        <h4 class="font-extrabold text-sm text-purple-900">سوق ومتجر الكتب المنشورة</h4>
+                        <p class="text-xs text-purple-700">تصفح الكتب الاحترافية المنشورة للبيع.</p>
+                    </div>
+                    <i class="fa-solid fa-shop text-2xl text-purple-400"></i>
+                </div>
+
+                <div id="published-books-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- يُملأ برمجياً -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 4. إعادة التدوير وتوريد الهوالك (مع شارات الأيزو والرقابة لبعض الشركاء) ================= -->
+        <section id="recycling" class="tab-content">
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl p-5 text-white mb-5 shadow-xl relative overflow-hidden">
+                <i class="fa-solid fa-recycle absolute -left-4 -bottom-4 text-white/20 text-7xl"></i>
+                <h2 class="text-xl font-extrabold mb-1 relative z-10">إعادة التدوير وتوريد هوالك المطبخ</h2>
+                <p class="text-white/90 text-xs relative z-10 font-medium">تواصل مع مصانع وشركات تدوير الزيوت المستعملة، قشور الخضروات، والأطعمة التالفة لإنتاج السماد والوقود الحيوي وبنك الطعام.</p>
+            </div>
+
+            <div class="bg-white rounded-3xl p-5 border shadow-sm mb-5 text-xs space-y-4">
+                <h3 class="font-extrabold text-sm text-slate-800"><i class="fa-solid fa-truck-fast text-emerald-600 ml-1"></i> طلب مندوب جمع وتوريد هوالك</h3>
+                
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">نوع الهوالك أو المخلفات:</label>
+                    <select id="recycle-type" class="w-full p-2.5 bg-slate-50 border rounded-xl font-bold outline-none">
+                        <option value="زيوت قلي مستعملة">زيوت قلي مستعملة (لإنتاج الوقود الحيوي)</option>
+                        <option value="قشور خضروات وفواكه">قشور خضروات وفواكه (لصناعة السماد العضوي Compost)</option>
+                        <option value="أغذية ومخبوزات فائضة">أغذية ومخبوزات فائضة صالحة للحيوانات أو التبرع</option>
+                        <option value="هوالك ورقية وتغليف">هوالك ورقية وتغليف مستدام</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-2">
+                    <div class="w-1/2">
+                        <label class="block font-bold text-slate-700 mb-1">الكمية التقديرية (كجم / لتر):</label>
+                        <input type="number" id="recycle-qty" value="5" min="1" class="w-full p-2.5 bg-slate-50 border rounded-xl font-bold text-center">
+                    </div>
+                    <div class="w-1/2">
+                        <label class="block font-bold text-slate-700 mb-1">رقم الهاتف / العنوان:</label>
+                        <input type="text" id="recycle-address" placeholder="القاهرة، المعادي..." class="w-full p-2.5 bg-slate-50 border rounded-xl font-bold">
+                    </div>
+                </div>
+
+                <button onclick="submitRecycleRequest()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl shadow-md text-xs">
+                    طلب مندوب الاستلام الفوري
+                </button>
+            </div>
+
+            <h4 class="font-extrabold text-slate-800 text-sm mb-3">الشركاء البيئيون وبنوك الطعام المعتمدون:</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <!-- شريك 1: معتمد بأيزو ورقابة دورية -->
+                <div class="bg-white p-4 rounded-2xl border shadow-sm space-y-2">
+                    <div class="flex items-center justify-between">
+                        <h5 class="font-extrabold text-slate-800"><i class="fa-solid fa-industry text-emerald-600"></i> شركة إيكو جرين للوقود الحيوي</h5>
+                        <div class="flex gap-1 flex-wrap">
+                            <span class="bg-blue-50 text-blue-700 border border-blue-200 text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1"><i class="fa-solid fa-certificate"></i> شهادة الأيزو والجودة (ISO)</span>
+                            <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1"><i class="fa-solid fa-shield-halved"></i> خاضع للرقابة الدورية الصحية</span>
+                        </div>
+                    </div>
+                    <p class="text-slate-500">تستلم زيوت القلي المستعملة وتمنحك نقاط مكافأة وعوائد بيئية.</p>
+                    <span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-1 rounded-lg inline-block">متاح للتوريد الفوري</span>
+                </div>
+                <!-- شريك 2: بنك الطعام (خاضع للرقابة الدورية فقط) -->
+                <div class="bg-white p-4 rounded-2xl border shadow-sm space-y-2">
+                    <div class="flex items-center justify-between">
+                        <h5 class="font-extrabold text-slate-800"><i class="fa-solid fa-hand-holding-heart text-blue-600"></i> بنك الطعام المصري</h5>
+                        <div class="flex gap-1 flex-wrap">
+                            <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1"><i class="fa-solid fa-shield-halved"></i> خاضع للرقابة الدورية الصحية</span>
+                        </div>
+                    </div>
+                    <p class="text-slate-500">استقبال وجبات فائض الطعام النظيف الآمن وتوجيهه للمستحقين.</p>
+                    <span class="text-blue-700 font-bold bg-blue-50 px-2 py-1 rounded-lg inline-block">شريك تبرع معتمد</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 5. ابتكر وصفة جديدة ================= -->
+        <section id="create" class="tab-content">
+            <h2 class="text-xl font-extrabold mb-4 text-slate-800">تركيب وصفة جديدة للتفريز</h2>
+            
+            <div class="bg-brand-50 border border-brand-100 rounded-3xl p-4 mb-5 shadow-sm">
+                <div class="bg-brand-500 text-white p-3 rounded-2xl shadow-md mb-3 flex items-center justify-between">
+                    <input type="text" id="recipe-title" placeholder="اسم الوصفة (مثال: حواوشي دجاج متبل)" class="bg-transparent text-white placeholder-brand-200 font-bold text-base outline-none w-full">
+                    <i class="fa-solid fa-puzzle-piece text-xl opacity-50"></i>
+                </div>
+                
+                <div id="puzzle-ingredients" class="space-y-2 border-r-2 border-brand-200 pr-3 text-xs">
+                    <div class="bg-white p-2.5 rounded-xl border border-brand-100 shadow-sm flex items-center">
+                        <i class="fa-solid fa-caret-left text-brand-400 ml-2"></i>
+                        <input type="text" placeholder="مكون (مثال: صدور دجاج مفرومة)" class="w-full outline-none font-medium ingredient-input">
+                    </div>
+                </div>
+                
+                <button onclick="addPuzzlePiece()" class="mt-3 text-brand-600 text-xs font-bold flex items-center gap-1.5 btn-hover-effect">
+                    <i class="fa-solid fa-plus-circle"></i> أضف مكون آخر
+                </button>
+
+                <div class="mt-4">
+                    <label class="block text-xs font-bold text-brand-700 mb-1">التصنيف الرئيسي:</label>
+                    <select id="recipe-category" class="w-full bg-white border border-brand-200 rounded-xl p-2.5 outline-none font-medium text-xs">
+                        <option value="لحوم ودواجن">لحوم ودواجن</option>
+                        <option value="بحريات">بحريات</option>
+                        <option value="خضروات وفواكه">خضروات وفواكه</option>
+                        <option value="ألبان وأجبان">ألبان وأجبان</option>
+                        <option value="حبوب وبقوليات">حبوب وبقوليات</option>
+                        <option value="اقتصادي ونباتي">اقتصادي ونباتي</option>
+                    </select>
+                </div>
+
+                <div class="mt-4">
+                    <label class="block text-xs font-bold text-brand-700 mb-1">خطوات التحضير وطريقة التفريز:</label>
+                    <textarea id="recipe-instructions" rows="3" placeholder="اكتب الخطوات بالتفصيل..." class="w-full bg-white border border-brand-200 rounded-xl p-2.5 outline-none text-xs font-medium"></textarea>
+                </div>
+            </div>
+
+            <button onclick="saveRecipe()" class="btn-hover-effect w-full bg-brand-500 hover:bg-brand-600 text-white font-extrabold py-3.5 rounded-2xl shadow-xl shadow-brand-500/30 text-sm">
+                حفظ الوصفة في المكتبة
+            </button>
+        </section>
+
+        <!-- ================= 6. سوق الشركاء والمتجر (مع شارات الأيزو والرقابة الدورية لبعض التجار وليس كلهم) ================= -->
+        <section id="marketplace" class="tab-content">
+            <div class="bg-gradient-to-r from-amber-500 to-rose-500 rounded-3xl p-5 text-white mb-5 shadow-xl relative overflow-hidden">
+                <i class="fa-solid fa-store absolute -left-4 -bottom-4 text-white/20 text-7xl"></i>
+                <h2 class="text-xl font-extrabold mb-1 relative z-10">سوق الشركاء والتجهيزات</h2>
+                <p class="text-white/90 text-xs font-medium relative z-10">شراء المستلزمات مباشرة من المجازر، المخابز، العطارات، ومصانع التغليف الصديقة للبيئة.</p>
+            </div>
+
+            <div id="market-items-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- يُملأ برمجياً -->
+            </div>
+        </section>
+
+        <!-- ================= 7. صفحة الطهاة المستقلين (مع شارات الأيزو والرقابة لبعض الطهاة وليس كلهم) ================= -->
+        <section id="freelance-jobs" class="tab-content">
+            <div class="bg-gradient-to-r from-indigo-600 to-sky-500 rounded-3xl p-5 text-white mb-5 shadow-xl relative overflow-hidden">
+                <i class="fa-solid fa-user-ninja absolute -left-4 -bottom-4 text-white/20 text-7xl"></i>
+                <h2 class="text-xl font-extrabold mb-1 relative z-10">فرص العمل المستقل للطهاة</h2>
+                <p class="text-white/90 text-xs font-medium relative z-10">تقديم خدمات تجهيز الطعام والتفريز المنزلي للأسر والمستقلين وتوليد دخل مستدام.</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200 mb-5 shadow-sm">
+                <h3 class="font-extrabold text-sm mb-1 text-slate-800">قدم كـ طاهٍ مستقل من المنزل</h3>
+                <p class="text-xs text-slate-500 mb-3">انضم لشبكة الطهاة المعتمدين لتلقي طلبات التفريز المنزلي للأسر العاملة.</p>
+                <button onclick="showToast('تم إرسال طلبك كطاهٍ معتمد بنجاح!')" class="bg-indigo-600 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-md">
+                    سجل كطاهٍ مستقل الآن
+                </button>
+            </div>
+
+            <h3 class="font-extrabold text-sm mb-3 text-slate-800">طلبات تجهيز وتفريز مطلوبة الآن:</h3>
+            <div id="freelance-requests-list" class="space-y-3">
+                <!-- يُملأ برمجياً -->
+            </div>
+        </section>
+
+        <!-- ================= 8. صفحة المجتمع والتحديات (بكامل تفاصيل المنشورات وتعديلها وصورها بابعاد كاملة) ================= -->
+        <section id="community" class="tab-content">
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-brand-100 mb-5 text-center relative overflow-hidden">
+                <h3 class="font-extrabold text-lg mb-1 text-brand-600"><i class="fa-solid fa-stopwatch"></i> تحدي الإنجاز السريع</h3>
+                <p class="text-xs text-slate-500 mb-4 font-medium">أنجز مهام التفريز في وقت قياسي واربح النقاط!</p>
+                
+                <div class="flex gap-2 justify-center mb-4">
+                    <button onclick="startTimer(10)" class="px-3 py-1.5 bg-brand-50 text-brand-600 rounded-full text-xs font-bold">10 دقائق</button>
+                    <button onclick="startTimer(30)" class="px-3 py-1.5 bg-brand-50 text-brand-600 rounded-full text-xs font-bold">30 دقيقة</button>
+                </div>
+                <div id="timer-display" class="text-5xl font-black text-slate-800 tracking-widest mb-4">00:00</div>
+            </div>
+
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-base font-extrabold text-slate-800">شارك طبقك اليوم</h3>
+                <button onclick="document.getElementById('post-modal').classList.remove('hidden')" class="bg-blue-600 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-md">
+                    <i class="fa-solid fa-camera ml-1"></i> نشر طبق
+                </button>
+            </div>
+
+            <div id="community-feed" class="space-y-4">
+                <!-- يُملأ برمجياً مع الصور بأبعاد كاملة وحذف المنشورات -->
+            </div>
+        </section>
+
+        <!-- ================= 9. صفحة البيئة والاستدامة ================= -->
+        <section id="eco-hub" class="tab-content">
+            <div class="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl p-5 text-white mb-5 shadow-xl relative overflow-hidden">
+                <i class="fa-solid fa-earth-americas absolute -left-4 -bottom-4 text-white/20 text-7xl"></i>
+                <h2 class="text-xl font-extrabold mb-1 relative z-10">أثرك البيئي</h2>
+                <p class="text-white/90 text-xs font-medium relative z-10">إدارتك الذكية للمطبخ تحمي كوكب الأرض وتقلل هدر الطعام.</p>
+            </div>
+
+            <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200 mb-5">
+                <h3 class="font-extrabold text-sm text-slate-800 mb-2"><i class="fa-solid fa-calculator text-emerald-500 ml-1"></i> حاسبة الحصص البيئية</h3>
+                <div class="flex gap-2 mb-3">
+                    <select id="family-size" class="w-1/2 bg-slate-50 border rounded-xl p-2.5 outline-none font-bold text-xs">
+                        <option value="2">فردين</option>
+                        <option value="4">4 أفراد</option>
+                        <option value="6">6 أفراد</option>
+                    </select>
+                    <button onclick="calculateEcoPortion()" class="w-1/2 bg-emerald-600 text-white font-bold rounded-xl text-xs">احسب الكمية</button>
+                </div>
+                <div id="calc-result" class="hidden bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-xs text-emerald-700 font-bold text-center"></div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200 text-center">
+                <h3 class="font-extrabold text-sm text-slate-800 mb-1">فائض طعام نظيف؟</h3>
+                <p class="text-xs text-slate-500 mb-3">بدلاً من هدره، قم بتوجيهه لأقرب بنك طعام أو جمعية خيرية.</p>
+                <button onclick="showToast('تم إرسال موقعك لأقرب مندوب جمعية خيرية!')" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-xs shadow-md">
+                    <i class="fa-solid fa-location-dot ml-1"></i> توجيه فائض الطعام (Geolocation)
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= 10. صفحة الملف الشخصي (مع شارات الأيزو والرقابة الدورية في البروفايل) ================= -->
+        <section id="profile" class="tab-content">
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-brand-100 mb-5 text-center relative">
+                <div class="w-20 h-20 mx-auto rounded-full border-4 border-white shadow-lg overflow-hidden mb-3">
+                    <img id="profile-avatar" src="https://ui-avatars.com/api/?background=f43f5e&color=fff&name=نوران" class="w-full h-full object-cover">
+                </div>
+                <h2 id="profile-name" class="text-lg font-extrabold text-slate-800">نوران</h2>
+                <p id="profile-email" class="text-xs text-slate-500 mb-2 font-medium">مؤسس التطبيق والشيف الرئيسي</p>
+                
+                <div class="inline-block bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold mb-3" id="profile-account-type-badge">
+                    حساب فردي عادي
+                </div>
+
+                <!-- شارات الأيزو والجودة والرقابة الدورية في البروفايل -->
+                <div class="flex justify-center gap-2 mb-4 flex-wrap">
+                    <span class="bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-certificate text-blue-500"></i> معتمد بشهادة الأيزو والجودة (ISO)
+                    </span>
+                    <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-shield-halved text-emerald-500"></i> خاضع للرقابة الدورية الصحية
+                    </span>
+                </div>
+                
+                <div class="mb-4">
+                    <button onclick="document.getElementById('switch-business-modal').classList.remove('hidden')" class="bg-slate-900 text-amber-400 px-4 py-2 rounded-xl text-xs font-extrabold shadow-md">
+                        <i class="fa-solid fa-briefcase ml-1"></i> التبديل إلى حساب الأعمال والشركات
+                    </button>
+                </div>
+
+                <div class="bg-brand-50 p-3 rounded-2xl border border-brand-100 inline-block px-6">
+                    <span class="block text-2xl font-black text-brand-600" id="profile-points">250</span>
+                    <span class="text-[10px] font-bold text-brand-400">نقطة إنجاز</span>
+                </div>
+            </div>
+
+            <h3 class="font-extrabold mb-3 text-sm text-slate-800">معرض أطباقي ومنشوراتي</h3>
+            <div id="profile-posts" class="grid grid-cols-3 gap-2">
+                <!-- يُملأ برمجياً بالأطباق المنشورة بابعاد كاملة -->
+            </div>
+        </section>
+
+        <!-- ================= 11. صانع ومتجر الكورسات والورش ================= -->
+        <section id="courses" class="tab-content">
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl p-5 text-white mb-5 shadow-xl relative overflow-hidden">
+                <i class="fa-solid fa-graduation-cap absolute -left-4 -bottom-4 text-white/20 text-7xl"></i>
+                <h2 class="text-xl font-extrabold mb-1 relative z-10">متجر الكورسات والورش التعليمية</h2>
+                <p class="text-white/90 text-xs relative z-10 font-medium">دورات احترافية في فنون التفريز، إدارة المطبخ الذكي، وتصوير محتوى الطبخ.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="courses-list">
+                <!-- يُملأ برمجياً -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- القائمة السفلية (الأزرار العادية غير المميزة) -->
+    <nav id="bottom-nav" class="fixed bottom-0 w-full glass-panel pb-safe z-30">
+        <div class="flex justify-around items-center h-16 px-1">
+            <button onclick="switchTab('storage-section')" class="nav-btn active-nav-btn flex flex-col items-center gap-1 w-1/7 text-slate-400 btn-hover-effect" data-target="storage-section">
+                <i class="fa-solid fa-snowflake text-base mb-0.5"></i>
+                <span class="text-[10px] font-bold">المخزون</span>
+            </button>
+            <button onclick="switchTab('library')" class="nav-btn flex flex-col items-center gap-1 w-1/7 text-slate-400 btn-hover-effect" data-target="library">
+                <i class="fa-solid fa-book text-base mb-0.5"></i>
+                <span class="text-[10px] font-bold">الوصفات</span>
+            </button>
+            <button onclick="switchTab('create')" class="nav-btn flex flex-col items-center gap-1 w-1/7 text-slate-400 btn-hover-effect" data-target="create">
+                <i class="fa-solid fa-puzzle-piece text-base mb-0.5"></i>
+                <span class="text-[10px] font-bold">ابتكر</span>
+            </button>
+            <button onclick="switchTab('marketplace')" class="nav-btn flex flex-col items-center gap-1 w-1/7 text-slate-400 btn-hover-effect" data-target="marketplace">
+                <i class="fa-solid fa-store text-base mb-0.5"></i>
+                <span class="text-[10px] font-bold">المتجر</span>
+            </button>
+            <button onclick="switchTab('freelance-jobs')" class="nav-btn flex flex-col items-center gap-1 w-1/7 text-slate-400 btn-hover-effect" data-target="freelance-jobs">
+                <i class="fa-solid fa-user-ninja text-base mb-0.5"></i>
+                <span class="text-[10px] font-bold">الطهاة</span>
+            </button>
+            <button onclick="switchTab('community')" class="nav-btn flex flex-col items-center gap-1 w-1/7 text-slate-400 btn-hover-effect" data-target="community">
+                <i class="fa-solid fa-users text-base mb-0.5"></i>
+                <span class="text-[10px] font-bold">المجتمع</span>
+            </button>
+            <button onclick="switchTab('eco-hub')" class="nav-btn flex flex-col items-center gap-1 w-1/7 text-slate-400 btn-hover-effect" data-target="eco-hub">
+                <i class="fa-solid fa-earth-americas text-base mb-0.5"></i>
+                <span class="text-[10px] font-bold">البيئة</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- النوافذ المنبثقة والموديلات -->
+
+    <!-- مودال نشر طبق في المجتمع مع الصور بأبعاد كاملة -->
+    <div id="post-modal" class="hidden fixed inset-0 z-50 bg-slate-900/70 items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-5 relative text-xs">
+            <button onclick="document.getElementById('post-modal').classList.add('hidden')" class="absolute top-3 left-3 text-slate-400 bg-slate-100 w-7 h-7 rounded-full"><i class="fa-solid fa-times"></i></button>
+            <h3 class="font-extrabold text-base mb-3 text-slate-800">مشاركة طبق أو وصفة بالمجتمع</h3>
+            <textarea id="post-text" rows="3" placeholder="اكتب وصفاً لطبقك المفرز أو المجهز..." class="w-full bg-slate-50 border rounded-2xl p-3 mb-3 outline-none font-medium"></textarea>
+            
+            <div id="post-media-preview" class="mb-3 hidden rounded-2xl overflow-hidden bg-slate-100 max-h-60 flex items-center justify-center border"></div>
+
+            <div class="flex justify-between items-center">
+                <label class="cursor-pointer text-blue-600 bg-blue-50 px-4 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-100 transition">
+                    <i class="fa-solid fa-image"></i> إرفاق صورة طبق
+                    <input type="file" id="media-upload" accept="image/*" class="hidden" onchange="handleMediaUpload(event)">
+                </label>
+                <button onclick="publishPost()" class="bg-slate-800 text-white px-6 py-2 rounded-xl font-bold shadow-md">نشر</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال حساب الأعمال والشركات -->
+    <div id="switch-business-modal" class="hidden fixed inset-0 z-[70] bg-slate-900/60 items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl relative">
+            <button onclick="document.getElementById('switch-business-modal').classList.add('hidden')" class="absolute top-4 left-4 text-slate-400 bg-slate-100 w-8 h-8 rounded-full"><i class="fa-solid fa-times"></i></button>
+            <h3 class="font-extrabold text-lg mb-1 text-slate-800">حساب الأعمال والشركات</h3>
+            <p class="text-xs text-slate-500 mb-4">اختر نوع نشاطك التجاري لتخصيص المخزون الذكي:</p>
+
+            <div class="space-y-2 mb-5 text-xs">
+                <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl cursor-pointer border">
+                    <input type="radio" name="biz-type" value="restaurant" checked class="accent-amber-500">
+                    <div><h4 class="font-bold text-slate-800">مطعم / فندق</h4><p class="text-[10px] text-slate-500">مخزون المواد الخام بالجملة والجرام.</p></div>
+                </label>
+                <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl cursor-pointer border">
+                    <input type="radio" name="biz-type" value="hypermarket" class="accent-amber-500">
+                    <div><h4 class="font-bold text-slate-800">هايبر ماركت / سوبر ماركت</h4><p class="text-[10px] text-slate-500">مراقبة الصلاحيات الكبيرة وتوجيه الفائض.</p></div>
+                </label>
+                <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl cursor-pointer border">
+                    <input type="radio" name="biz-type" value="bakery" class="accent-amber-500">
+                    <div><h4 class="font-bold text-slate-800">مخبز / مجزر</h4><p class="text-[10px] text-slate-500">إدارة المعجنات واللحوم الطازجة.</p></div>
+                </label>
+                <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl cursor-pointer border">
+                    <input type="radio" name="biz-type" value="influencer" class="accent-amber-500">
+                    <div><h4 class="font-bold text-slate-800">صانع محتوى / مؤثّر</h4><p class="text-[10px] text-slate-500">تسهيل تأليف الكتب ونشر الكورسات.</p></div>
+                </label>
+            </div>
+            <button onclick="applyBusinessAccount()" class="w-full bg-amber-500 text-white font-bold py-3 rounded-xl text-xs shadow-lg">تأكيد التفعيل</button>
+        </div>
+    </div>
+
+    <!-- مودال إضافة صنف للمخزون -->
+    <div id="add-inventory-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-xs p-5 shadow-2xl relative text-xs">
+            <button onclick="document.getElementById('add-inventory-modal').classList.add('hidden')" class="absolute top-3 left-3 text-slate-400 bg-slate-100 w-7 h-7 rounded-full"><i class="fa-solid fa-times"></i></button>
+            <h3 class="font-extrabold text-base mb-3 text-slate-800">إضافة صنف جديد</h3>
+            
+            <label class="block font-bold text-slate-600 mb-1">اسم الصنف:</label>
+            <input type="text" id="new-inv-name" placeholder="مثال: شاورما فراخ" class="w-full bg-slate-50 border rounded-xl p-2.5 mb-3 font-bold outline-none">
+            
+            <label class="block font-bold text-slate-600 mb-1">التصنيف:</label>
+            <select id="new-inv-cat" class="w-full bg-slate-50 border rounded-xl p-2.5 mb-3 font-bold outline-none">
+                <option value="لحوم ودواجن">لحوم ودواجن</option>
+                <option value="بحريات">بحريات</option>
+                <option value="خضروات وفواكه">خضروات وفواكه</option>
+                <option value="ألبان وأجبان">ألبان وأجبان</option>
+                <option value="حبوب وبقوليات">حبوب وبقوليات</option>
+                <option value="اقتصادي ونباتي">اقتصادي ونباتي</option>
+            </select>
+
+            <div class="flex gap-2 mb-3">
+                <div class="w-1/2">
+                    <label class="block font-bold text-slate-600 mb-1">الكمية:</label>
+                    <input type="number" id="new-inv-qty" value="1" min="1" class="w-full text-center bg-slate-50 border rounded-xl p-2 font-bold">
+                </div>
+                <div class="w-1/2">
+                    <label class="block font-bold text-slate-600 mb-1">الصلاحية (أيام):</label>
+                    <input type="number" id="new-inv-days" value="30" min="1" class="w-full text-center bg-slate-50 border rounded-xl p-2 font-bold text-brand-600">
+                </div>
+            </div>
+
+            <button onclick="saveNewInventoryItem()" class="w-full bg-brand-500 text-white font-bold py-3 rounded-xl shadow-lg">حفظ وإضافة</button>
+        </div>
+    </div>
+
+    <!-- مودال عرض تفاصيل الوصفة كاملة -->
+    <div id="recipe-detail-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl relative text-xs">
+            <button onclick="document.getElementById('recipe-detail-modal').classList.add('hidden')" class="absolute top-4 left-4 text-slate-400 bg-slate-100 w-8 h-8 rounded-full"><i class="fa-solid fa-times"></i></button>
+            <h3 id="modal-recipe-title" class="font-extrabold text-base text-slate-800 mb-2"></h3>
+            <span id="modal-recipe-cat" class="inline-block bg-brand-50 text-brand-600 px-2.5 py-0.5 rounded-full font-bold mb-3"></span>
+            
+            <h4 class="font-bold text-slate-700 mb-1">المكونات:</h4>
+            <div id="modal-recipe-ings" class="p-3 bg-slate-50 rounded-xl mb-3 space-y-1 font-medium text-slate-600"></div>
+            
+            <h4 class="font-bold text-slate-700 mb-1">خطوات التحضير والتفريز:</h4>
+            <p id="modal-recipe-inst" class="p-3 bg-slate-50 rounded-xl text-slate-600 leading-relaxed font-medium"></p>
+        </div>
+    </div>
+
+    <!-- مودال اختيار الوصفات للكتاب -->
+    <div id="cookbook-select-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl relative max-h-[80vh] flex flex-col text-xs">
+            <button onclick="document.getElementById('cookbook-select-modal').classList.add('hidden')" class="absolute top-4 left-4 text-slate-400 bg-slate-100 w-8 h-8 rounded-full"><i class="fa-solid fa-times"></i></button>
+            <h3 class="font-extrabold text-sm mb-3 text-slate-800">اختر وصفات لإضافتها للكتاب</h3>
+            <div id="cookbook-options" class="overflow-y-auto no-scrollbar flex-1 space-y-2 mb-3"></div>
+            <button onclick="addSelectedToDraftBook()" class="bg-amber-600 text-white font-bold py-3 rounded-xl shadow-md">إضافة المحدد للكتاب</button>
+        </div>
+    </div>
+
+    <!-- مودال الصوت الذكي -->
+    <div id="voice-inventory-modal" class="hidden fixed inset-0 z-[60] bg-slate-900/50 items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-xs p-5 shadow-2xl relative text-center text-xs">
+            <button onclick="document.getElementById('voice-inventory-modal').classList.add('hidden')" class="absolute top-3 left-3 text-slate-400 bg-slate-100 w-7 h-7 rounded-full"><i class="fa-solid fa-times"></i></button>
+            <h3 class="font-extrabold text-base mb-2 text-slate-800">التسجيل الصوتي الذكي</h3>
+            <p class="text-slate-500 mb-4">تحدث باسم الصنف لإضافته آلياً للمخزون.</p>
+            <button onclick="simulateVoiceInput()" class="w-14 h-14 bg-brand-500 text-white rounded-full text-xl shadow-lg mb-2 btn-hover-effect mx-auto flex items-center justify-center">
+                <i class="fa-solid fa-microphone"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-5 py-2.5 rounded-full shadow-2xl text-xs font-bold transition-all duration-300 opacity-0 pointer-events-none z-[300]">
+        <span id="toast-msg">تم بنجاح!</span>
+    </div>
+
+    <!-- سكربت التطبيق -->
+    <script>
+        const todayStr = new Date().toISOString().split('T')[0];
+        function getPastDate(d) {
+            const dt = new Date();
+            dt.setDate(dt.getDate() - d);
+            return dt.toISOString().split('T')[0];
+        }
+
+        // الأكلات والأصناف الأصلية الكاملة
+        const originalFreezer = [
+            { id: 1, name: 'شاورما دجاج متبلة', category: 'لحوم ودواجن', qty: 4, active: true, addedDate: getPastDate(10), totalDays: 30 },
+            { id: 2, name: 'حواوشي دجاج بالبهارات', category: 'لحوم ودواجن', qty: 6, active: true, addedDate: getPastDate(4), totalDays: 45 },
+            { id: 3, name: 'كفتة لحم مصبعة', category: 'لحوم ودواجن', qty: 3, active: true, addedDate: getPastDate(15), totalDays: 60 },
+            { id: 4, name: 'كباب حلة مقطع', category: 'لحوم ودواجن', qty: 2, active: true, addedDate: getPastDate(2), totalDays: 40 },
+            { id: 5, name: 'سمبوسك محشية جبنة', category: 'اقتصادي ونباتي', qty: 5, active: true, addedDate: getPastDate(8), totalDays: 90 },
+            { id: 6, name: 'سمك ماكريل متبل', category: 'بحريات', qty: 3, active: true, addedDate: getPastDate(5), totalDays: 20 },
+            { id: 7, name: 'بطاطس نصف مقلية', category: 'خضروات وفواكه', qty: 4, active: true, addedDate: getPastDate(12), totalDays: 120 }
+        ];
+
+        const originalChilling = [
+            { id: 101, name: 'لبن حليب طازج (2 لتر)', category: 'ألبان وأجبان', qty: 2, active: true, addedDate: getPastDate(1), totalDays: 5 },
+            { id: 102, name: 'جبنة قريش بالزيت', category: 'ألبان وأجبان', qty: 1, active: true, addedDate: getPastDate(2), totalDays: 7 },
+            { id: 103, name: 'مسقعة مطبوخة جاهزة', category: 'اقتصادي ونباتي', qty: 2, active: true, addedDate: getPastDate(1), totalDays: 4 }
+        ];
+
+        const originalDry = [
+            { id: 201, name: 'أرز أبيض مصري (5 كجم)', category: 'حبوب وبقوليات', qty: 1, active: true, addedDate: getPastDate(30), totalDays: 365 },
+            { id: 202, name: 'عدس أصفر جاف', category: 'حبوب وبقوليات', qty: 3, active: true, addedDate: getPastDate(15), totalDays: 180 },
+            { id: 203, name: 'مكرونة تشكيلة (1 كجم)', category: 'حبوب وبقوليات', qty: 6, active: true, addedDate: getPastDate(45), totalDays: 300 }
+        ];
+
+        const originalLibrary = [
+            { id: 301, name: 'حواوشي دجاج سريع', category: 'لحوم ودواجن', ingredients: ['عيش صحي', 'شاورما دجاج متبلة', 'توابل حواوشي'], instructions: 'ضع حشوة الشاورما داخل الخبز، وقم بتحميصها في الفرن لمدة 15 دقيقة.' },
+            { id: 302, name: 'برجر الفاصوليا النباتي', category: 'اقتصادي ونباتي', ingredients: ['فاصوليا حمراء مسلوقة', 'مشروم مفرر', 'بهارات برجر'], instructions: 'اخلط المكونات واصنع أقراص البرجر ثم قم بتفريزها مباشرة.' },
+            { id: 303, name: 'مسقعة باللحمة المفرومة', category: 'لحوم ودواجن', ingredients: ['باذنجان مقلي', 'لحمة مفرومة معصجة', 'صلصة طماطم'], instructions: 'رص الطبقات في صينية وقم بتفريزها بعد أن تبرد تماماً.' }
+        ];
+
+        // المتجر مع تفعيل شارات الأيزو والرقابة الدورية لبعض التجار وليس كلهم
+        const originalMarketItems = [
+            { id: 1, name: 'أكياس وتغليف صديق للبيئة', store: 'إيكو باك للتغليف', price: '85 ج.م', category: 'تغليف', img: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=300', hasISO: false, hasInspection: true },
+            { id: 2, name: 'صدور دجاج طازجة متبلة', store: 'مجازر الخير المعتمدة', price: '160 ج.م / كجم', category: 'مجازر', img: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=300', hasISO: true, hasInspection: true },
+            { id: 3, name: 'خبز صحي بالشوفان', store: 'مخبز الأناقة الصحي', price: '40 ج.م', category: 'مخابز', img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300', hasISO: false, hasInspection: false }
+        ];
+
+        const originalCourses = [
+            { id: 1, title: 'كورس التفريز الاحترافي وتوفير الوقت', instructor: 'شيف أميرة فهمي', price: '250 ج.م', rating: '4.9', desc: 'تعلّمي تفريز وجبات شهر كامل في يوم واحد.' },
+            { id: 2, title: 'أساسيات إدارة المطابخ والتكلفة (B2B)', instructor: 'م. أحمد مصطفى', price: '600 ج.م', rating: '5.0', desc: 'دليل المطاعم لتقليل التلفيات وحفظ المواد الخام.' }
+        ];
+
+        const originalPublishedBooks = [
+            { id: 1, title: 'دليل الشيف نوران للتفريز الشامل', author: 'الشيف نوران', price: '150 ج.م', rating: '4.9', desc: 'أسرار تجهيز وجبات الشهر كاملة.', recipesCount: 20 }
+        ];
+
+        window.appState = {
+            currentStorage: 'freezer',
+            freezer: JSON.parse(JSON.stringify(originalFreezer)),
+            chilling: JSON.parse(JSON.stringify(originalChilling)),
+            dry: JSON.parse(JSON.stringify(originalDry)),
+            library: JSON.parse(JSON.stringify(originalLibrary)),
+            marketItems: JSON.parse(JSON.stringify(originalMarketItems)),
+            courses: JSON.parse(JSON.stringify(originalCourses)),
+            publishedBooks: JSON.parse(JSON.stringify(originalPublishedBooks)),
+            myDrafts: [],
+            freelanceRequests: [
+                { id: 1, title: 'مطلوب تجهيز 20 وجبة تفريز أسبوعية', budget: '800 ج.م', location: 'التجمع، القاهرة', certifiedChef: true, inspected: true },
+                { id: 2, title: 'تجهيز معجنات صحية لمناسبة', budget: '500 ج.م', location: 'الشيخ زايد', certifiedChef: false, inspected: true }
+            ],
+            posts: [
+                { id: 1, user: 'سارة خالد', avatar: 'https://ui-avatars.com/api/?background=3b82f6&color=fff&name=سارة', time: 'منذ ساعتين', text: 'أنتهيت للتو من تفريز وجبات الأسبوع! وفرت عليّ ساعات طويلة كل يوم. ❄️', media: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600' }
+            ]
+        };
+
+        function initApp() {
+            renderStorage('الكل');
+            renderLibrary();
+            renderMarketplace();
+            renderCourses();
+            renderDraftBooks();
+            renderPublishedBooks();
+            renderFreelanceRequests();
+            renderCommunity();
+            renderProfilePosts();
+        }
+
+        // التحكم في التبويبات وإظهار/إخفاء شريط التخزين الأسود حصرياً
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            const targetEl = document.getElementById(tabId);
+            if (targetEl) targetEl.classList.add('active');
+
+            const storageSubNav = document.getElementById('storage-sub-nav');
+            if (tabId === 'storage-section') {
+                storageSubNav.classList.remove('hidden');
+            } else {
+                storageSubNav.classList.add('hidden');
+            }
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active-nav-btn');
+                btn.classList.add('text-slate-400');
+            });
+            const activeNav = document.querySelector(`.nav-btn[data-target="${tabId}"]`);
+            if (activeNav) {
+                activeNav.classList.add('active-nav-btn');
+                activeNav.classList.remove('text-slate-400');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function switchStorageSub(sub) {
+            window.appState.currentStorage = sub;
+            document.getElementById('sub-btn-freezer').className = sub === 'freezer' ? 'px-3.5 py-1 rounded-full text-xs font-bold transition bg-brand-500 text-white flex items-center gap-1 shrink-0' : 'px-3.5 py-1 rounded-full text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center gap-1 shrink-0';
+            document.getElementById('sub-btn-chilling').className = sub === 'chilling' ? 'px-3.5 py-1 rounded-full text-xs font-bold transition bg-cyan-600 text-white flex items-center gap-1 shrink-0' : 'px-3.5 py-1 rounded-full text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center gap-1 shrink-0';
+            document.getElementById('sub-btn-dry').className = sub === 'dry' ? 'px-3.5 py-1 rounded-full text-xs font-bold transition bg-amber-600 text-white flex items-center gap-1 shrink-0' : 'px-3.5 py-1 rounded-full text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center gap-1 shrink-0';
+
+            const titles = {
+                freezer: { t: '❄️ مخزون الفريزر (التفريز)', s: 'متابعة دقيقة للاستهلاك والكميات' },
+                chilling: { t: '❄️ قسم التبريد (الثلاجة)', s: 'ألبان وأجبان ووجبات طازجة' },
+                dry: { t: '🍞 التخزين الجاف (البانتري)', s: 'حبوب، بقوليات، ومؤن المطبخ' }
+            };
+            document.getElementById('storage-title').innerText = titles[sub].t;
+            document.getElementById('storage-subtitle').innerText = titles[sub].s;
+
+            renderStorage('الكل');
+        }
+
+        function calcDays(addedDateStr, totalDays) {
+            const added = new Date(addedDateStr);
+            const today = new Date();
+            const diff = Math.floor((today - added) / (1000 * 60 * 60 * 24));
+            return totalDays - diff;
+        }
+
+        function renderStorage(cat) {
+            const cur = window.appState.currentStorage;
+            let items = window.appState[cur];
+            if (cat !== 'الكل') items = items.filter(i => i.category === cat);
+
+            const list = document.getElementById('storage-items-list');
+            if (!list) return;
+
+            list.innerHTML = items.map(item => {
+                const rem = calcDays(item.addedDate, item.totalDays);
+                const isExp = rem <= 3 && item.active;
+                const inactiveClass = !item.active ? 'opacity-50 grayscale bg-slate-100' : (isExp ? 'bg-red-50 border-red-200' : 'bg-white border-slate-100');
+
+                return `
+                    <div class="${inactiveClass} p-3.5 rounded-2xl border shadow-sm flex items-center justify-between text-xs transition">
+                        <div class="flex items-center gap-3 flex-1">
+                            <input type="checkbox" ${item.active ? 'checked' : ''} onchange="toggleItemActive(${item.id}, '${cur}')" class="w-4 h-4 accent-brand-500 rounded cursor-pointer">
+                            <div class="truncate">
+                                <h4 class="font-extrabold ${!item.active ? 'line-through text-slate-400' : 'text-slate-800'} text-sm">${escapeHTML(item.name)}</h4>
+                                <div class="flex gap-2 text-[10px] text-slate-500 mt-0.5">
+                                    <span>${escapeHTML(item.category)}</span>
+                                    <span>• أُضيف: ${item.addedDate}</span>
+                                    <span class="${rem <= 0 ? 'text-red-600 font-bold' : 'text-emerald-600'}">متبقي ${rem} يوم</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="flex items-center bg-slate-100 rounded-xl border overflow-hidden">
+                                <button onclick="updateItemQty(${item.id}, '${cur}', -1)" class="px-2.5 py-1 text-slate-600 font-bold hover:bg-slate-200" ${!item.active?'disabled':''}>-</button>
+                                <span class="px-2 font-black w-6 text-center">${item.qty}</span>
+                                <button onclick="updateItemQty(${item.id}, '${cur}', 1)" class="px-2.5 py-1 text-slate-600 font-bold hover:bg-slate-200" ${!item.active?'disabled':''}>+</button>
+                            </div>
+                            <button onclick="deleteStorageItem(${item.id}, '${cur}')" class="text-red-400 hover:text-red-600 p-2 bg-red-50 rounded-xl"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('') || '<p class="text-center text-slate-400 py-6 text-xs">لا توجد أصناف في هذا القسم.</p>';
+        }
+
+        function filterStorageCat(cat) {
+            document.querySelectorAll('#storage-filter-container .filter-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-800', 'text-white', 'shadow-md');
+                btn.classList.add('bg-white', 'border', 'text-slate-600');
+                if (btn.innerText.trim() === cat) {
+                    btn.classList.remove('bg-white', 'border', 'text-slate-600');
+                    btn.classList.add('bg-slate-800', 'text-white', 'shadow-md');
+                }
+            });
+            renderStorage(cat);
+        }
+
+        function toggleItemActive(id, cur) {
+            const item = window.appState[cur].find(i => i.id === id);
+            if (item) { item.active = !item.active; renderStorage('الكل'); }
+        }
+
+        function updateItemQty(id, cur, change) {
+            const item = window.appState[cur].find(i => i.id === id);
+            if (item) {
+                item.qty += change;
+                if (item.qty <= 0) item.qty = 0;
+                renderStorage('الكل');
+            }
+        }
+
+        function deleteStorageItem(id, cur) {
+            window.appState[cur] = window.appState[cur].filter(i => i.id !== id);
+            renderStorage('الكل');
+            showToast('تم حذف الصنف');
+        }
+
+        function openAddInventoryModal() {
+            document.getElementById('add-inventory-modal').classList.remove('hidden');
+        }
+
+        function saveNewInventoryItem() {
+            const name = document.getElementById('new-inv-name').value.trim();
+            const cat = document.getElementById('new-inv-cat').value;
+            const qty = parseInt(document.getElementById('new-inv-qty').value) || 1;
+            const days = parseInt(document.getElementById('new-inv-days').value) || 30;
+
+            if(!name) { showToast('ادخل اسم الصنف'); return; }
+
+            const cur = window.appState.currentStorage;
+            window.appState[cur].unshift({ id: Date.now(), name, category: cat, qty, active: true, addedDate: todayStr, totalDays: days });
+            document.getElementById('add-inventory-modal').classList.add('hidden');
+            document.getElementById('new-inv-name').value = '';
+            renderStorage('الكل');
+            showToast('تمت الإضافة بنجاح!');
+        }
+
+        // ================= صفحة الوصفات والأزرار الستة المطلوبة =================
+        function renderLibrary() {
+            const list = document.getElementById('library-list');
+            if(!list) return;
+            list.innerHTML = window.appState.library.map(r => `
+                <div class="bg-white p-4 rounded-2xl border shadow-sm space-y-3 text-xs">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-extrabold text-slate-800 text-sm mb-1">${escapeHTML(r.name)}</h4>
+                            <span class="bg-brand-50 text-brand-600 px-2.5 py-0.5 rounded-full font-bold text-[10px]">${escapeHTML(r.category)}</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-1">
+                        ${r.ingredients.map(i => `<span class="bg-slate-100 px-2 py-0.5 rounded-md text-slate-600 font-medium text-[10px]">${escapeHTML(i)}</span>`).join('')}
+                    </div>
+                    <!-- الأزرار الستة المطلوبة -->
+                    <div class="grid grid-cols-3 gap-1.5 pt-2 border-t border-slate-100">
+                        <button onclick="sendRecipeToStorage(${r.id}, 'freezer')" class="bg-brand-50 text-brand-700 py-1.5 rounded-xl font-bold hover:bg-brand-100">إرسال للفريزر</button>
+                        <button onclick="sendRecipeToStorage(${r.id}, 'chilling')" class="bg-cyan-50 text-cyan-700 py-1.5 rounded-xl font-bold hover:bg-cyan-100">إرسال للثلاجة</button>
+                        <button onclick="sendRecipeToStorage(${r.id}, 'dry')" class="bg-amber-50 text-amber-700 py-1.5 rounded-xl font-bold hover:bg-amber-100">إرسال للجاف</button>
+                        <button onclick="viewRecipeModal(${r.id})" class="bg-blue-50 text-blue-700 py-1.5 rounded-xl font-bold">عرض الوصفة</button>
+                        <button onclick="sendRecipeToDraftBook(${r.id})" class="bg-purple-50 text-purple-700 py-1.5 rounded-xl font-bold">إرسال للكتاب</button>
+                        <button onclick="deleteRecipe(${r.id})" class="bg-red-50 text-red-600 py-1.5 rounded-xl font-bold">حذف</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function sendRecipeToStorage(id, target) {
+            const r = window.appState.library.find(x => x.id === id);
+            if(r) {
+                window.appState[target].unshift({ id: Date.now(), name: r.name, category: r.category, qty: 1, active: true, addedDate: todayStr, totalDays: 30 });
+                showToast(`تم إرسال "${r.name}" إلى ${target==='freezer'?'الفريزر':(target==='chilling'?'الثلاجة':'التخزين الجاف')} بنجاح!`);
+            }
+        }
+
+        function viewRecipeModal(id) {
+            const r = window.appState.library.find(x => x.id === id);
+            if(r) {
+                document.getElementById('modal-recipe-title').innerText = r.name;
+                document.getElementById('modal-recipe-cat').innerText = r.category;
+                document.getElementById('modal-recipe-ings').innerHTML = r.ingredients.map(i => `• ${escapeHTML(i)}`).join('<br>');
+                document.getElementById('modal-recipe-inst').innerText = r.instructions || 'لا توجد خطوات مضافة.';
+                document.getElementById('recipe-detail-modal').classList.remove('hidden');
+            }
+        }
+
+        function sendRecipeToDraftBook(id) {
+            const r = window.appState.library.find(x => x.id === id);
+            if(r && !window.appState.myDrafts.find(d => d.id === r.id)) {
+                window.appState.myDrafts.push(r);
+                showToast(`تم إرسال الوصفة لمكتبة المسودات وصانع الكتب!`);
+            } else {
+                showToast('الوصفة موجودة مسبقاً في مكتبة المسودات.');
+            }
+        }
+
+        function deleteRecipe(id) {
+            window.appState.library = window.appState.library.filter(r => r.id !== id);
+            renderLibrary();
+            showToast('تم حذف الوصفة');
+        }
+
+        // ================= صانع الكتب ومكتبة المسودات ومتجر الكتب =================
+        function switchCookbookSubTab(sub) {
+            const myLib = document.getElementById('cookbook-sub-mylib');
+            const store = document.getElementById('cookbook-sub-store');
+            const btnLib = document.getElementById('btn-sub-mylib');
+            const btnStore = document.getElementById('btn-sub-store');
+
+            if(sub === 'mylib') {
+                myLib.classList.remove('hidden');
+                store.classList.add('hidden');
+                btnLib.className = "flex-1 py-2.5 rounded-xl font-extrabold text-xs transition bg-white text-amber-700 shadow-sm flex items-center justify-center gap-1.5";
+                btnStore.className = "flex-1 py-2.5 rounded-xl font-bold text-xs transition text-slate-600 hover:text-amber-700 flex items-center justify-center gap-1.5";
+            } else {
+                myLib.classList.add('hidden');
+                store.classList.remove('hidden');
+                btnStore.className = "flex-1 py-2.5 rounded-xl font-extrabold text-xs transition bg-white text-amber-700 shadow-sm flex items-center justify-center gap-1.5";
+                btnLib.className = "flex-1 py-2.5 rounded-xl font-bold text-xs transition text-slate-600 hover:text-amber-700 flex items-center justify-center gap-1.5";
+            }
+        }
+
+        function renderDraftBooks() {
+            const list = document.getElementById('my-drafts-list');
+            if(!list) return;
+            list.innerHTML = window.appState.myDrafts.map(r => `
+                <div class="bg-white p-3 rounded-xl border text-xs flex justify-between items-center">
+                    <div>
+                        <h5 class="font-extrabold text-slate-800">${escapeHTML(r.name)}</h5>
+                        <span class="text-[10px] text-slate-500">${escapeHTML(r.category)}</span>
+                    </div>
+                    <button onclick="window.appState.myDrafts = window.appState.myDrafts.filter(x=>x.id!==${r.id}); renderDraftBooks();" class="text-red-400"><i class="fa-solid fa-times"></i></button>
+                </div>
+            `).join('') || '<p class="text-xs text-slate-400 text-center py-4 bg-slate-50 rounded-xl border border-dashed">مكتبة المسودات فارغة.</p>';
+        }
+
+        function saveBookDraft(isPublishing) {
+            const title = document.getElementById('book-title').value.trim();
+            const author = document.getElementById('book-author').value.trim() || 'الشيف نوران';
+            const priceVal = document.getElementById('book-price').value.trim();
+            const desc = document.getElementById('book-desc').value.trim();
+
+            if(!title) { showToast('ادخل عنوان الكتاب'); return; }
+
+            const priceText = (priceVal && parseFloat(priceVal) > 0) ? `${priceVal} ج.م` : 'مجاني';
+            const newBook = {
+                id: Date.now(), title, author, price: priceText, rating: '5.0',
+                desc: desc || 'كتاب مميز في التجهيز المنزلي وتفريز الأطعمة.', recipesCount: window.appState.myDrafts.length || 3
+            };
+
+            if(isPublishing) {
+                window.appState.publishedBooks.unshift(newBook);
+                renderPublishedBooks();
+                showToast(`تم نشر كتاب "${title}" في متجر الكتب بنجاح!`);
+                switchCookbookSubTab('store');
+            } else {
+                showToast(`تم حفظ كتاب "${title}" في مكتبة المسودات.`);
+            }
+        }
+
+        function renderPublishedBooks() {
+            const grid = document.getElementById('published-books-grid');
+            if(!grid) return;
+            grid.innerHTML = window.appState.publishedBooks.map(b => `
+                <div class="bg-white p-4 rounded-2xl border shadow-sm flex flex-col justify-between text-xs">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-amber-50 text-amber-700 px-2 py-0.5 rounded-md font-bold text-[10px]">${b.recipesCount} وصفة</span>
+                            <span class="text-amber-500 font-bold"><i class="fa-solid fa-star"></i> ${b.rating}</span>
+                        </div>
+                        <h4 class="font-extrabold text-sm text-slate-800 mb-1">${escapeHTML(b.title)}</h4>
+                        <p class="text-amber-700 font-bold mb-2">بواسطة: ${escapeHTML(b.author)}</p>
+                        <p class="text-slate-500 mb-3">${escapeHTML(b.desc)}</p>
+                    </div>
+                    <div class="flex justify-between items-center pt-2 border-t border-slate-100 font-bold">
+                        <span class="text-slate-800 text-sm">${b.price}</span>
+                        <button onclick="showToast('تم شراء الكتاب بنجاح!')" class="bg-amber-600 text-white px-3 py-1.5 rounded-xl shadow-sm">شراء / قراءة</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openSelectRecipesModal() {
+            const opts = document.getElementById('cookbook-options');
+            if(!opts) return;
+            opts.innerHTML = window.appState.library.map(r => `
+                <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-xl cursor-pointer">
+                    <input type="checkbox" class="cb-sel w-4 h-4 accent-amber-600 rounded" value="${r.id}">
+                    <span class="font-bold">${escapeHTML(r.name)}</span>
+                </label>
+            `).join('');
+            document.getElementById('cookbook-select-modal').classList.remove('hidden');
+        }
+
+        function addSelectedToDraftBook() {
+            document.querySelectorAll('.cb-sel:checked').forEach(cb => {
+                const r = window.appState.library.find(x => x.id === parseInt(cb.value));
+                if(r && !window.appState.myDrafts.find(d => d.id === r.id)) window.appState.myDrafts.push(r);
+            });
+            document.getElementById('cookbook-select-modal').classList.add('hidden');
+            renderDraftBooks();
+            showToast('تمت الإضافة لمكتبة المسودات');
+        }
+
+        // ================= إعادة التدوير =================
+        function submitRecycleRequest() {
+            const type = document.getElementById('recycle-type').value;
+            const qty = document.getElementById('recycle-qty').value;
+            const address = document.getElementById('recycle-address').value.trim();
+            if(!address) { showToast('أدخل العنوان للتوصيل أو الاستلام'); return; }
+            showToast(`تم إرسال طلب توريد (${qty} كجم/لتر من ${type}) للشركة المعتمدة بنجاح!`);
+            document.getElementById('recycle-address').value = '';
+        }
+
+        // ================= المتجر والشركات مع شارات الأيزو والرقابة الدورية لبعض التجار وليس كلهم =================
+        function renderMarketplace() {
+            const list = document.getElementById('market-items-list');
+            if(!list) return;
+            list.innerHTML = window.appState.marketItems.map(item => `
+                <div class="bg-white rounded-2xl overflow-hidden border shadow-sm flex flex-col justify-between text-xs">
+                    <div class="h-28 overflow-hidden bg-slate-100 relative">
+                        <img src="${item.img}" class="w-full h-full object-cover">
+                        <span class="absolute top-2 right-2 bg-slate-900/80 text-white text-[10px] px-2 py-0.5 rounded-md font-bold">${escapeHTML(item.category)}</span>
+                        ${item.hasISO ? '<span class="absolute top-2 left-2 bg-blue-600 text-white text-[9px] px-2 py-0.5 rounded-md font-bold shadow flex items-center gap-1"><i class="fa-solid fa-certificate"></i> أيزو جودة</span>' : ''}
+                    </div>
+                    <div class="p-3 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-extrabold text-sm text-slate-800 mb-1">${escapeHTML(item.name)}</h4>
+                            <p class="text-[10px] text-slate-400 font-medium mb-1"><i class="fa-solid fa-store text-amber-500"></i> ${escapeHTML(item.store)}</p>
+                            ${item.hasInspection ? '<div class="mb-2"><span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1 inline-flex"><i class="fa-solid fa-shield-halved"></i> خاضع للرقابة الدورية الصحية</span></div>' : ''}
+                        </div>
+                        <div class="flex justify-between items-center pt-2 border-t">
+                            <span class="font-extrabold text-brand-600">${item.price}</span>
+                            <button onclick="showToast('تمت الإضافة لطلبات الشراء')" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg font-bold">طلب مباشر</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderCourses() {
+            const list = document.getElementById('courses-list');
+            if(!list) return;
+            list.innerHTML = window.appState.courses.map(c => `
+                <div class="bg-white p-4 rounded-2xl border shadow-sm flex flex-col justify-between text-xs">
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="bg-purple-50 text-purple-700 px-2.5 py-0.5 rounded-full font-bold text-[10px]">كورس احترافي</span>
+                            <span class="text-amber-500 font-bold"><i class="fa-solid fa-star"></i> ${c.rating}</span>
+                        </div>
+                        <h4 class="font-extrabold text-sm text-slate-800 mb-1">${escapeHTML(c.title)}</h4>
+                        <p class="text-purple-700 font-bold mb-2">${escapeHTML(c.instructor)}</p>
+                        <p class="text-slate-500 mb-3">${escapeHTML(c.desc)}</p>
+                    </div>
+                    <div class="flex justify-between items-center pt-2 border-t font-bold">
+                        <span>${c.price}</span>
+                        <button onclick="showToast('تم الاشتراك في الكورس بنجاح!')" class="bg-purple-600 text-white px-3 py-1.5 rounded-xl">اشترك الآن</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderFreelanceRequests() {
+            const list = document.getElementById('freelance-requests-list');
+            if(!list) return;
+            list.innerHTML = window.appState.freelanceRequests.map(req => `
+                <div class="bg-white p-3.5 rounded-2xl border shadow-sm flex justify-between items-center text-xs">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1 flex-wrap">
+                            <h4 class="font-bold text-slate-800">${escapeHTML(req.title)}</h4>
+                            ${req.certifiedChef ? '<span class="bg-blue-50 text-blue-700 text-[9px] font-bold px-1.5 py-0.5 rounded border border-blue-200"><i class="fa-solid fa-certificate"></i> شيف حاصل على الأيزو</span>' : ''}
+                        </div>
+                        <p class="text-slate-400 flex items-center gap-2">
+                            <span><i class="fa-solid fa-location-dot"></i> ${escapeHTML(req.location)}</span>
+                            ${req.inspected ? '<span class="text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded"><i class="fa-solid fa-shield-halved"></i> رقابة دورية</span>' : ''}
+                        </p>
+                    </div>
+                    <div class="text-left">
+                        <span class="block font-extrabold text-indigo-600 mb-1">${req.budget}</span>
+                        <button onclick="showToast('تم قبول الطلب')" class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-xl font-bold">قبول الطلب</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ================= المجتمع والمنشورات والصور بأبعاد كاملة =================
+        let tempMediaUrl = null;
+
+        function handleMediaUpload(event) {
+            const file = event.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    tempMediaUrl = e.target.result;
+                    const preview = document.getElementById('post-media-preview');
+                    preview.innerHTML = `<img src="${tempMediaUrl}" class="w-full max-h-60 object-cover rounded-2xl">`;
+                    preview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function publishPost() {
+            const text = document.getElementById('post-text').value.trim();
+            if(!text && !tempMediaUrl) { showToast('اكتب نصاً أو أرفق صورة للنشر'); return; }
+
+            window.appState.posts.unshift({
+                id: Date.now(),
+                user: 'نوران (مؤسس التطبيق)',
+                avatar: document.getElementById('header-avatar').src,
+                time: 'الآن',
+                text: text,
+                media: tempMediaUrl
+            });
+
+            document.getElementById('post-text').value = '';
+            tempMediaUrl = null;
+            document.getElementById('post-media-preview').classList.add('hidden');
+            document.getElementById('post-modal').classList.add('hidden');
+
+            renderCommunity();
+            renderProfilePosts();
+            showToast('تم نشر الطبق بنجاح!');
+        }
+
+        function deleteCommunityPost(id) {
+            window.appState.posts = window.appState.posts.filter(p => p.id !== id);
+            renderCommunity();
+            renderProfilePosts();
+            showToast('تم حذف المنشور');
+        }
+
+        function renderCommunity() {
+            const feed = document.getElementById('community-feed');
+            if(!feed) return;
+            feed.innerHTML = window.appState.posts.map(p => `
+                <div class="bg-white p-4 rounded-2xl border shadow-sm text-xs space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <img src="${p.avatar}" class="w-8 h-8 rounded-full object-cover">
+                            <div>
+                                <h5 class="font-extrabold text-slate-800">${escapeHTML(p.user)}</h5>
+                                <span class="text-[10px] text-slate-400">${p.time}</span>
+                            </div>
+                        </div>
+                        <button onclick="deleteCommunityPost(${p.id})" class="text-red-400 hover:text-red-600 p-1"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>
+                    ${p.text ? `<p class="text-slate-600 font-medium">${escapeHTML(p.text)}</p>` : ''}
+                    ${p.media ? `<div class="rounded-2xl overflow-hidden bg-slate-100"><img src="${p.media}" class="w-full object-cover rounded-2xl max-h-96"></div>` : ''}
+                </div>
+            `).join('') || '<p class="text-center text-slate-400 py-6 text-xs">لا توجد منشورات حالياً.</p>';
+        }
+
+        function renderProfilePosts() {
+            const container = document.getElementById('profile-posts');
+            if(!container) return;
+            
+            let postsWithMedia = window.appState.posts.filter(p => p.media);
+            if(postsWithMedia.length === 0) {
+                container.innerHTML = `
+                    <div class="aspect-square bg-slate-100 rounded-xl overflow-hidden"><img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400" class="w-full h-full object-cover"></div>
+                    <div class="aspect-square bg-slate-100 rounded-xl overflow-hidden"><img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400" class="w-full h-full object-cover"></div>
+                    <div class="aspect-square bg-slate-100 rounded-xl overflow-hidden"><img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400" class="w-full h-full object-cover"></div>
+                `;
+            } else {
+                container.innerHTML = postsWithMedia.map(p => `
+                    <div class="aspect-square bg-slate-100 rounded-xl overflow-hidden"><img src="${p.media}" class="w-full h-full object-cover"></div>
+                `).join('');
+            }
+        }
+
+        function applyBusinessAccount() {
+            const type = document.querySelector('input[name="biz-type"]:checked').value;
+            const labels = { restaurant: 'مطعم / فندق', hypermarket: 'هايبر ماركت', bakery: 'مخبز / مجزر', influencer: 'صانع محتوى' };
+            document.getElementById('profile-account-type-badge').innerText = `حساب أعمال: ${labels[type]}`;
+            document.getElementById('profile-account-type-badge').className = "inline-block bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-bold mb-4 border border-amber-300";
+            document.getElementById('switch-business-modal').classList.add('hidden');
+            showToast(`تم التفعيل لوضع ${labels[type]}`);
+        }
+
+        function addPuzzlePiece() {
+            const c = document.getElementById('puzzle-ingredients');
+            const div = document.createElement('div');
+            div.className = 'bg-white p-2.5 rounded-xl border shadow-sm flex items-center text-xs mt-2';
+            div.innerHTML = `<i class="fa-solid fa-caret-left text-brand-400 ml-2"></i><input type="text" placeholder="مكون إضافي..." class="w-full outline-none font-medium ingredient-input"><button onclick="this.parentElement.remove()" class="text-red-400 mr-2"><i class="fa-solid fa-times"></i></button>`;
+            c.appendChild(div);
+        }
+
+        function saveRecipe() {
+            const title = document.getElementById('recipe-title').value.trim();
+            const cat = document.getElementById('recipe-category').value;
+            const inst = document.getElementById('recipe-instructions').value.trim();
+            const ings = [];
+            document.querySelectorAll('.ingredient-input').forEach(i => { if(i.value.trim()) ings.push(i.value.trim()); });
+
+            if(!title) { showToast('ادخل اسم الوصفة'); return; }
+            window.appState.library.unshift({ id: Date.now(), name: title, category: cat, ingredients: ings, instructions: inst });
+            document.getElementById('recipe-title').value = '';
+            document.getElementById('recipe-instructions').value = '';
+            renderLibrary();
+            switchTab('library');
+            showToast('تم حفظ الوصفة بنجاح!');
+        }
+
+        function startTimer(mins) {
+            let secs = mins * 60;
+            const disp = document.getElementById('timer-display');
+            clearInterval(window.timerInt);
+            window.timerInt = setInterval(() => {
+                secs--;
+                let m = Math.floor(secs / 60), s = secs % 60;
+                disp.innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                if(secs <= 0) { clearInterval(window.timerInt); showToast('انتهى الوقت! تم كسب نقاط الإنجاز.'); }
+            }, 1000);
+            showToast('تم بدء مؤقت التحدي!');
+        }
+
+        function calculateEcoPortion() {
+            const size = document.getElementById('family-size').value;
+            const res = document.getElementById('calc-result');
+            res.innerHTML = `الكمية المثالية بدون هدر لـ ${size} أفراد هي: <span class="text-sm font-black">${size * 170} جرام</span> تقريباً.`;
+            res.classList.remove('hidden');
+        }
+
+        function simulateVoiceInput() {
+            showToast('جارِ التعرف على الصوت...');
+            setTimeout(() => {
+                window.appState.freezer.unshift({ id: Date.now(), name: 'كباب حلة متبل (صوتي)', category: 'لحوم ودواجن', qty: 2, active: true, addedDate: todayStr, totalDays: 30 });
+                renderStorage('الكل');
+                document.getElementById('voice-inventory-modal').classList.add('hidden');
+                showToast('تمت الإضافة للفريزر بنجاح!');
+            }, 1500);
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            t.style.opacity = '1';
+            setTimeout(() => { t.style.opacity = '0'; }, 3000);
+        }
+
+        function escapeHTML(str) {
+            return str ? str.replace(/[&<>'"]/g, t => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[t])) : '';
+        }
+    </script>
+</body>
+</html>
